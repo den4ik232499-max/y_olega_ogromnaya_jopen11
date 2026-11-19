@@ -104,35 +104,97 @@
   .d1 { left:5%; } .d2 { left:28%; } .d3 { left:52%; } .d4 { left:76%; }
   @keyframes bounce { from{transform:translateY(0) rotate(-6deg)} to{transform:translateY(-40px) rotate(6deg)} }
 
-  /* ================== ЕБАНУТАЯ АУРА-ОРБИТА ================== */
-  #orbit-system { position:absolute; top:50%; left:50%; width:0; height:0;
-                  z-index:6; opacity:0; transition:opacity 1.5s; pointer-events:none; }
-  #party.drop #orbit-system { opacity:1; }
+  /* ==========================================================
+     ЕБАНУТАЯ АУРА-ОРБИТА v2 — ОБЛЕТАЕТ ВСЕХ 4 ВИДОСОВ
+     ========================================================== */
+  #orbit-system {
+    /* Центр — по центру группы танцоров (не по центру экрана) */
+    position: absolute;
+    top: 62%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    z-index: 6;
+    opacity: 0;
+    transition: opacity 1.5s;
+    pointer-events: none;
 
-  .orbit-wrapper { position:absolute; animation: orbitAround 10s linear infinite; transform-style: preserve-3d; }
-  
-  .orbit-img { position:absolute; width:120px; height:120px; object-fit:cover; border-radius:50%;
-               animation: selfSpin 3s linear infinite, auraPulse 1.5s ease-in-out infinite alternate;
-               transform-origin: center; }
-               
+    /* Радиус и сжатие эллипса */
+    --radius: 46vw;
+    --scale-y: 0.4;       /* 1 = круг, меньше = плоский эллипс */
+    --counter-y: 2.5;     /* всегда = 1 / --scale-y */
+
+    /* Сжимаем всё по Y, чтобы орбита была широкой, а не огромным кругом */
+    transform: scaleY(var(--scale-y));
+    transform-origin: center center;
+  }
+  #party.drop #orbit-system { opacity: 1; }
+
+  .orbit-wrapper {
+    position: absolute;
+    transform-origin: 0 0;
+    animation: orbitAround 10s linear infinite;
+  }
+
+  .orbit-img {
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    margin-left: -80px;   /* центрируем по точке (0,0) обёртки */
+    margin-top: -80px;
+    object-fit: cover;
+    border-radius: 50%;
+    transform-origin: center;
+    /* Крутим вокруг своей оси + сжимаем обратно по Y + пульс ауры */
+    animation: selfSpin 3s linear infinite, auraPulse 1.2s ease-in-out infinite alternate;
+    will-change: transform, filter, box-shadow;
+    backface-visibility: visible;
+  }
+
+  /* Цвета для каждой фотки */
   .o1 .orbit-img { --glow-color: #00ffff; border: 2px solid #00ffff; }
   .o2 .orbit-img { --glow-color: #00ff00; border: 2px solid #00ff00; }
   .o3 .orbit-img { --glow-color: #ff00ff; border: 2px solid #ff00ff; }
   .o4 .orbit-img { --glow-color: #ffaa00; border: 2px solid #ffaa00; }
 
+  /* Полёт по широкой орбите, картинка остаётся "лицом" к нам */
   @keyframes orbitAround {
-    0%   { transform: rotate(0deg) translateX(300px) rotate(0deg); }
-    100% { transform: rotate(360deg) translateX(300px) rotate(-360deg); }
+    from { transform: rotate(0deg)   translateX(var(--radius)) rotate(0deg); }
+    to   { transform: rotate(360deg) translateX(var(--radius)) rotate(-360deg); }
   }
-  @keyframes selfSpin { 0%{transform: rotateY(0deg)} 100%{transform: rotateY(360deg)} }
+
+  /* Вращение вокруг оси + компенсация сжатия родителя */
+  @keyframes selfSpin {
+    0%   { transform: scaleY(var(--counter-y)) rotateY(0deg); }
+    100% { transform: scaleY(var(--counter-y)) rotateY(360deg); }
+  }
+
+  /* ЕБАНУТАЯ АУРА (усиленная ×3) */
   @keyframes auraPulse {
-    0%   { box-shadow: 0 0 15px var(--glow-color), inset 0 0 15px var(--glow-color); filter: brightness(1); }
-    100% { box-shadow: 0 0 40px var(--glow-color), 0 0 80px var(--glow-color), inset 0 0 25px var(--glow-color); filter: brightness(1.4); }
+    0% {
+      box-shadow:
+        0 0 25px var(--glow-color),
+        0 0 50px var(--glow-color),
+        0 0 90px var(--glow-color),
+        inset 0 0 30px var(--glow-color);
+      filter: brightness(1.15) saturate(1.4);
+    }
+    100% {
+      box-shadow:
+        0 0 60px var(--glow-color),
+        0 0 130px var(--glow-color),
+        0 0 220px var(--glow-color),
+        0 0 320px var(--glow-color),
+        inset 0 0 60px var(--glow-color);
+      filter: brightness(1.8) saturate(2);
+    }
   }
-  .o1 { animation-delay: 0s; }
-  .o2 { animation-delay: -2.5s; }
-  .o3 { animation-delay: -5s; }
-  .o4 { animation-delay: -7.5s; }
+
+  /* Раскидываем по кругу (10s / 4 = 2.5s шаг) */
+  .o1 { animation-delay: 0s;   }
+  .o2 { animation-delay: -2.5s;}
+  .o3 { animation-delay: -5s;  }
+  .o4 { animation-delay: -7.5s;}
 
   .stuff { opacity:0; transition:opacity 1s; }
   #party.drop .stuff { opacity:1; }
@@ -144,21 +206,24 @@
     .blood { width:35vw; }
     .bg-text { top:40%; white-space:normal; line-height:1.2; }
     .floor { background-size: 45px 45px; }
-    @keyframes orbitAround {
-      0%   { transform: rotate(0deg) translateX(160px) rotate(0deg); }
-      100% { transform: rotate(360deg) translateX(160px) rotate(-360deg); }
+
+    /* Орбита для мобилки: центр ниже (видосы ниже), радиус шире относительно экрана */
+    #orbit-system {
+      top: 66%;
+      --radius: 48vw;
+      --scale-y: 0.45;
+      --counter-y: 2.22;
     }
-    .orbit-img { width:70px; height:70px; }
+    .orbit-img { width: 110px; height: 110px; margin-left: -55px; margin-top: -55px; }
   }
+
   @media (max-width: 450px) {
     .dancer { width:110px; height:150px; }
     button { font-size:1.3em; padding:12px 30px; }
-    @keyframes orbitAround {
-      0%   { transform: rotate(0deg) translateX(130px) rotate(0deg); }
-      100% { transform: rotate(360deg) translateX(130px) rotate(-360deg); }
-    }
-    .orbit-img { width:50px; height:50px; }
+    #orbit-system { top: 68%; --radius: 50vw; }
+    .orbit-img { width: 90px; height: 90px; margin-left: -45px; margin-top: -45px; }
   }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration:.01s !important; animation-iteration-count:1 !important; }
   }
@@ -183,35 +248,31 @@
   <div class="glow g2 stuff"></div>
   <div class="glow g3 stuff"></div>
 
-  <!-- Видосы с Олегом и пацанами -->
   <video class="dancer d1 stuff" src="viggle-default-9cc0140389172dd1nekit.mp4"  preload="auto" loop muted playsinline aria-hidden="true"></video>
   <video class="dancer d2 stuff" src="viggle-default-f4629c1568faeee2tols.mp4"   preload="auto" loop muted playsinline aria-hidden="true"></video>
   <video class="dancer d3 stuff" src="viggle-default-591f575abbb9532aseva.mp4"   preload="auto" loop muted playsinline aria-hidden="true"></video>
   <video class="dancer d4 stuff" src="viggle-default-2941a4ae7d16d838kostya.mp4" preload="auto" loop muted playsinline aria-hidden="true"></video>
 
-  <!-- 🚨 МЕСТО ДЛЯ ТВОИХ ЕБАНУТЫХ ФОТОК (крутятся вокруг) 🚨 -->
+  <!-- 🚨 ОРБИТА С ФОТКАМИ (облетает всех 4 сразу) 🚨 -->
   <div id="orbit-system">
-    <div class="orbit-wrapper o1"><img class="orbit-img" alt="мужик"></div>
-    <div class="orbit-wrapper o2"><img class="orbit-img" alt="свинья"></div>
-    <div class="orbit-wrapper o3"><img class="orbit-img" alt="кот"></div>
-    <div class="orbit-wrapper o4"><img class="orbit-img" alt="мопс"></div>
+    <div class="orbit-wrapper o1"><img class="orbit-img" alt=""></div>
+    <div class="orbit-wrapper o2"><img class="orbit-img" alt=""></div>
+    <div class="orbit-wrapper o3"><img class="orbit-img" alt=""></div>
+    <div class="orbit-wrapper o4"><img class="orbit-img" alt=""></div>
   </div>
 </div>
 
 <audio id="music" src="MysticMuse - AINSI BAS LA VIDA HARDTEKK Extend (hitmo.net).mp3" preload="auto" loop></audio>
 
 <script>
-/* ⬇⬇⬇ ВСТАВЬ СЮДА СВОИ ФОТКИ ⬇⬇⬇ */
-// Если фотки лежат в одной папке с этим файлом, просто назови их 1.jpg, 2.jpg, 3.jpg, 4.jpg
-// Если фотки загружены в интернет (imgur и т.д.), вставь прямые ссылки в кавычки, например: "https://i.imgur.com/xxx.jpg"
-
+/* ⬇⬇⬇ ФОТКИ ТУТ ⬇⬇⬇ */
 const IMAGES = [
   "1.jpg", // Мужик с глазами
   "2.jpg", // Свинья
   "3.jpg", // Кот в очках
   "4.jpg"  // Мопс в худи
 ];
-/* ⬆⬆⬆ ВСЁ, БОЛЬШЕ НИЧЕГО МЕНЯТЬ НЕ НУЖНО ⬆⬆⬆ */
+/* ⬆⬆⬆ */
 
 document.querySelectorAll('.orbit-img').forEach((img, i) => {
   if (IMAGES[i] && IMAGES[i] !== "") img.src = IMAGES[i];
@@ -232,16 +293,16 @@ document.querySelectorAll('.orbit-img').forEach((img, i) => {
   let virtualStart = null, useVirtual = false;
 
   function now() { return useVirtual ? (performance.now() - virtualStart) / 1000 : audio.currentTime; }
-  function enableVirtualClock(reason) { if (useVirtual) return; useVirtual = true; virtualStart = performance.now(); }
+  function enableVirtualClock() { if (useVirtual) return; useVirtual = true; virtualStart = performance.now(); }
   function unlockVideos() { videos.forEach(v => { v.muted = true; const p = v.play(); if (p && p.then) p.then(() => v.pause()).catch(() => {}); }); }
   function warmupVideos() { videos.forEach(v => { try { v.load(); } catch(e){} }); }
-  
+
   function dropVideos() {
     videos.forEach(v => { try { v.currentTime = 0; } catch(e){} });
     Promise.all(videos.map(v => v.play().catch(() => {}))).catch(() => {});
     videos.forEach(v => { v.style.animation = 'none'; void v.offsetHeight; v.style.animation = ''; });
   }
-  
+
   function startSyncCheck() {
     syncTimer = setInterval(() => {
       if (!videos.length) return;
@@ -257,8 +318,8 @@ document.querySelectorAll('.orbit-img').forEach((img, i) => {
     greet.classList.add('show');
     unlockVideos(); warmupVideos();
     const p = audio.play();
-    if (p && p.then) p.catch(err => enableVirtualClock('audio: ' + err.name));
-    audio.addEventListener('error', () => enableVirtualClock('audio.error'));
+    if (p && p.then) p.catch(() => enableVirtualClock());
+    audio.addEventListener('error', () => enableVirtualClock());
     rafId = requestAnimationFrame(watchDrop);
   }
 
