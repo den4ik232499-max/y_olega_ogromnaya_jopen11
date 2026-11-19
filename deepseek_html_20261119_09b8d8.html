@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>С Днём рождения, Олег!</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; background:#000; overflow:hidden; font-family:Arial, sans-serif; color:#fff; }
+
+  #intro { position:fixed; inset:0; background:#000; z-index:10;
+           display:flex; align-items:center; justify-content:center; flex-direction:column; gap:22px; }
+  button { font-size:1.6em; padding:15px 40px; border:none; border-radius:12px;
+           background:#ff00aa; color:#fff; cursor:pointer; font-weight:bold;
+           box-shadow:0 0 20px #ff00aa, 0 0 40px #ff00aa, 0 0 60px #ff00aa;
+           transition:transform .15s, box-shadow .3s;
+           animation: btnPulse 1.6s ease-in-out infinite alternate; }
+  button:hover  { transform:scale(1.06); }
+  button:active { transform:scale(.97); }
+  @keyframes btnPulse {
+    from { box-shadow:0 0 20px #ff00aa, 0 0 40px #ff00aa, 0 0 60px #ff00aa; }
+    to   { box-shadow:0 0 30px #ff00aa, 0 0 70px #ff00aa, 0 0 110px #ff00aa; }
+  }
+
+  #greet { position:fixed; inset:0; z-index:3; display:none; pointer-events:none; }
+  #greet.show { display:block; }
+  .bg-text { position:absolute; top:45%; left:0; width:100%; text-align:center; margin:0; padding:0 12px;
+             font-family:Impact, "Arial Black", sans-serif;
+             font-size:clamp(1.2rem, 4.5vw, 3.2rem); color:#fff; letter-spacing:2px;
+             text-shadow:0 0 8px #ff00aa, 0 0 18px #ff00aa, 0 0 35px #ff00aa;
+             animation:neonBlink 1.2s steps(1, end) infinite; }
+  @keyframes neonBlink {
+    0%   { opacity:1; color:#fff;    text-shadow:0 0 8px #ff00aa, 0 0 18px #ff00aa, 0 0 35px #ff00aa; }
+    15%  { opacity:.2; color:#ff00aa; }
+    30%  { opacity:1; color:#ffff00; text-shadow:0 0 8px #ffff00, 0 0 18px #ffff00, 0 0 35px #ff00aa; }
+    45%  { opacity:.4; color:#fff; }
+    60%  { opacity:1; color:#00ffff; text-shadow:0 0 8px #00ffff, 0 0 18px #00ffff, 0 0 35px #00ffff; }
+    75%  { opacity:.15; }
+    90%  { opacity:1; color:#ff00aa; }
+    100% { opacity:1; color:#fff;    text-shadow:0 0 8px #ff00aa, 0 0 18px #ff00aa, 0 0 35px #ff00aa; }
+  }
+
+  #rampage { position:fixed; inset:0; background:#000; z-index:4;
+             display:none; align-items:center; justify-content:center; }
+  #rampage.show { display:flex; }
+  .rampage-text { margin:0; padding:0 12px; text-align:center;
+                  font-family:Impact, "Arial Black", sans-serif;
+                  font-size:clamp(2rem, 10vw, 7rem); color:#ff0000;
+                  text-shadow:0 0 20px #ff0000, 0 0 40px #ff0000;
+                  animation:redFlash .4s steps(2, start) infinite; }
+  @keyframes redFlash { 0%{opacity:1;color:#ff0000} 50%{opacity:.1;color:#550000} 100%{opacity:1;color:#ff0000} }
+  #rampage.after { background:transparent; align-items:flex-start; padding-top:8vh;
+                   pointer-events:none; animation:screenFlash .8s steps(2, start) infinite; }
+  #rampage.after .rampage-text { color:#fff; text-shadow:0 0 20px #ff0000, 0 0 40px #ff0000; animation:none; }
+  @keyframes screenFlash { 0%{background:rgba(255,0,0,.18)} 50%{background:rgba(90,0,0,.1)} 100%{background:rgba(255,0,0,.18)} }
+
+  .blood { position:fixed; top:0; bottom:0; width:22vw; opacity:0;
+           transition:opacity 1.5s; pointer-events:none;
+           background-image:url('blood.png');
+           background-repeat:repeat-y; background-size:100% auto; background-position:top center;
+           z-index:9; }
+  #rampage.after .blood { opacity:.9; }
+  .blood-left { left:0; } .blood-right { right:0; transform:scaleX(-1); }
+
+  #party { position:fixed; inset:0; overflow:hidden; background:#000; }
+  #party::before {
+    content:''; position:absolute; inset:0; z-index:0;
+    background: radial-gradient(ellipse 120% 80% at 50% 110%, #ff0080 0%, #6a00a8 25%, #1a0033 55%, #000 90%);
+    opacity:0; transition:opacity 1.2s; animation: skyPulse 3.2s ease-in-out infinite alternate;
+  }
+  #party.drop::before { opacity:1; }
+  @keyframes skyPulse { 0%{filter:hue-rotate(0deg) brightness(1)} 100%{filter:hue-rotate(140deg) brightness(1.25)} }
+
+  #party::after {
+    content:''; position:absolute; top:50%; left:50%; width:180vmax; height:180vmax; margin:-90vmax 0 0 -90vmax; z-index:1;
+    background: conic-gradient(from 0deg, transparent 0deg, rgba(255,0,170,.4) 12deg, transparent 24deg, transparent 45deg, rgba(0,255,255,.4) 57deg, transparent 69deg, transparent 90deg, rgba(255,255,0,.35) 102deg, transparent 114deg, transparent 135deg, rgba(255,0,170,.4) 147deg, transparent 159deg, transparent 180deg, rgba(0,255,255,.4) 192deg, transparent 204deg, transparent 225deg, rgba(255,255,0,.35) 237deg, transparent 249deg, transparent 270deg, rgba(255,0,170,.4) 282deg, transparent 294deg, transparent 315deg, rgba(0,255,255,.4) 327deg, transparent 339deg);
+    opacity:0; transition:opacity 1.5s; animation: spin 18s linear infinite; filter: blur(25px); pointer-events:none;
+  }
+  #party.drop::after { opacity:.65; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .stars { position:absolute; inset:0; z-index:2;
+    background-image: radial-gradient(1px 1px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 60% 70%,#fff,transparent),radial-gradient(1.5px 1.5px at 40% 50%,#fff,transparent),radial-gradient(1px 1px at 80% 20%,#fff,transparent),radial-gradient(1px 1px at 10% 80%,#fff,transparent),radial-gradient(1.5px 1.5px at 90% 60%,#fff,transparent),radial-gradient(1px 1px at 30% 10%,#fff,transparent),radial-gradient(1px 1px at 70% 90%,#fff,transparent),radial-gradient(1px 1px at 55% 15%,#fff,transparent),radial-gradient(1px 1px at 15% 55%,#fff,transparent);
+    opacity:0; transition:opacity 2s; animation: twinkle 3s ease-in-out infinite alternate; }
+  #party.drop .stars { opacity:.7; }
+  @keyframes twinkle { from{opacity:.35} to{opacity:.85} }
+
+  .floor { position:absolute; left:-50%; right:-50%; bottom:0; top:45%; z-index:3;
+    background-image: linear-gradient(rgba(255,0,170,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,0,170,.6) 1px, transparent 1px);
+    background-size: 70px 70px; background-position: 0 0;
+    transform: perspective(400px) rotateX(62deg); transform-origin: center bottom;
+    animation: floorScroll 1.2s linear infinite; filter: drop-shadow(0 0 12px #ff00aa); }
+  @keyframes floorScroll { to { background-position: 0 70px, 0 0; } }
+
+  .glow { position:absolute; top:-150px; width:350px; height:350px; border-radius:50%; filter:blur(80px); opacity:.7; z-index:4; animation:swing 4s ease-in-out infinite alternate; }
+  .g1 { background:#f0f; left:0; }
+  .g2 { background:#0ff; left:40%; animation-delay:-1.5s; }
+  .g3 { background:#ff0; left:80%; animation-delay:-3s; }
+  @keyframes swing { from{transform:translateX(0)} to{transform:translateX(-30vw)} }
+
+  .dancer { position:absolute; bottom:25%; width:220px; height:300px; object-fit:cover;
+            border-radius:16px; z-index:5; animation: bounce .4s infinite alternate;
+            background:#111; will-change: transform; }
+  .d1 { left:5%; } .d2 { left:28%; } .d3 { left:52%; } .d4 { left:76%; }
+  @keyframes bounce { from{transform:translateY(0) rotate(-6deg)} to{transform:translateY(-40px) rotate(6deg)} }
+
+  /* ================== ЕБАНУТАЯ АУРА-ОРБИТА ================== */
+  #orbit-system { position:absolute; top:50%; left:50%; width:0; height:0;
+                  z-index:6; opacity:0; transition:opacity 1.5s; pointer-events:none; }
+  #party.drop #orbit-system { opacity:1; }
+
+  .orbit-wrapper { position:absolute; animation: orbitAround 10s linear infinite; transform-style: preserve-3d; }
+  
+  .orbit-img { position:absolute; width:120px; height:120px; object-fit:cover; border-radius:50%;
+               animation: selfSpin 3s linear infinite, auraPulse 1.5s ease-in-out infinite alternate;
+               transform-origin: center; }
+               
+  .o1 .orbit-img { --glow-color: #00ffff; border: 2px solid #00ffff; }
+  .o2 .orbit-img { --glow-color: #00ff00; border: 2px solid #00ff00; }
+  .o3 .orbit-img { --glow-color: #ff00ff; border: 2px solid #ff00ff; }
+  .o4 .orbit-img { --glow-color: #ffaa00; border: 2px solid #ffaa00; }
+
+  @keyframes orbitAround {
+    0%   { transform: rotate(0deg) translateX(300px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(300px) rotate(-360deg); }
+  }
+  @keyframes selfSpin { 0%{transform: rotateY(0deg)} 100%{transform: rotateY(360deg)} }
+  @keyframes auraPulse {
+    0%   { box-shadow: 0 0 15px var(--glow-color), inset 0 0 15px var(--glow-color); filter: brightness(1); }
+    100% { box-shadow: 0 0 40px var(--glow-color), 0 0 80px var(--glow-color), inset 0 0 25px var(--glow-color); filter: brightness(1.4); }
+  }
+  .o1 { animation-delay: 0s; }
+  .o2 { animation-delay: -2.5s; }
+  .o3 { animation-delay: -5s; }
+  .o4 { animation-delay: -7.5s; }
+
+  .stuff { opacity:0; transition:opacity 1s; }
+  #party.drop .stuff { opacity:1; }
+
+  @media (max-width: 800px) {
+    .dancer { width:130px; height:180px; bottom:20%; border-radius:10px; }
+    .d1 { left:2%; } .d2 { left:26%; } .d3 { left:50%; } .d4 { left:74%; }
+    .glow { width:200px; height:200px; filter:blur(50px); top:-80px; }
+    .blood { width:35vw; }
+    .bg-text { top:40%; white-space:normal; line-height:1.2; }
+    .floor { background-size: 45px 45px; }
+    @keyframes orbitAround {
+      0%   { transform: rotate(0deg) translateX(160px) rotate(0deg); }
+      100% { transform: rotate(360deg) translateX(160px) rotate(-360deg); }
+    }
+    .orbit-img { width:70px; height:70px; }
+  }
+  @media (max-width: 450px) {
+    .dancer { width:110px; height:150px; }
+    button { font-size:1.3em; padding:12px 30px; }
+    @keyframes orbitAround {
+      0%   { transform: rotate(0deg) translateX(130px) rotate(0deg); }
+      100% { transform: rotate(360deg) translateX(130px) rotate(-360deg); }
+    }
+    .orbit-img { width:50px; height:50px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration:.01s !important; animation-iteration-count:1 !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="intro"><button onclick="start()">Олег 200</button></div>
+
+<div id="greet"><p class="bg-text">с днём рождения, Олег! братик, барагозик 🎉</p></div>
+
+<div id="rampage">
+  <div class="blood blood-left"></div>
+  <div class="blood blood-right"></div>
+  <h1 class="rampage-text">RAMPAGE -9999</h1>
+</div>
+
+<div id="party">
+  <div class="stars stuff"></div>
+  <div class="floor stuff"></div>
+  <div class="glow g1 stuff"></div>
+  <div class="glow g2 stuff"></div>
+  <div class="glow g3 stuff"></div>
+
+  <!-- Видосы с Олегом и пацанами -->
+  <video class="dancer d1 stuff" src="viggle-default-9cc0140389172dd1nekit.mp4"  preload="auto" loop muted playsinline aria-hidden="true"></video>
+  <video class="dancer d2 stuff" src="viggle-default-f4629c1568faeee2tols.mp4"   preload="auto" loop muted playsinline aria-hidden="true"></video>
+  <video class="dancer d3 stuff" src="viggle-default-591f575abbb9532aseva.mp4"   preload="auto" loop muted playsinline aria-hidden="true"></video>
+  <video class="dancer d4 stuff" src="viggle-default-2941a4ae7d16d838kostya.mp4" preload="auto" loop muted playsinline aria-hidden="true"></video>
+
+  <!-- 🚨 МЕСТО ДЛЯ ТВОИХ ЕБАНУТЫХ ФОТОК (крутятся вокруг) 🚨 -->
+  <div id="orbit-system">
+    <div class="orbit-wrapper o1"><img class="orbit-img" alt="мужик"></div>
+    <div class="orbit-wrapper o2"><img class="orbit-img" alt="свинья"></div>
+    <div class="orbit-wrapper o3"><img class="orbit-img" alt="кот"></div>
+    <div class="orbit-wrapper o4"><img class="orbit-img" alt="мопс"></div>
+  </div>
+</div>
+
+<audio id="music" src="MysticMuse - AINSI BAS LA VIDA HARDTEKK Extend (hitmo.net).mp3" preload="auto" loop></audio>
+
+<script>
+/* ⬇⬇⬇ ВСТАВЬ СЮДА СВОИ ФОТКИ ⬇⬇⬇ */
+// Если фотки лежат в одной папке с этим файлом, просто назови их 1.jpg, 2.jpg, 3.jpg, 4.jpg
+// Если фотки загружены в интернет (imgur и т.д.), вставь прямые ссылки в кавычки, например: "https://i.imgur.com/xxx.jpg"
+
+const IMAGES = [
+  "1.jpg", // Мужик с глазами
+  "2.jpg", // Свинья
+  "3.jpg", // Кот в очках
+  "4.jpg"  // Мопс в худи
+];
+/* ⬆⬆⬆ ВСЁ, БОЛЬШЕ НИЧЕГО МЕНЯТЬ НЕ НУЖНО ⬆⬆⬆ */
+
+document.querySelectorAll('.orbit-img').forEach((img, i) => {
+  if (IMAGES[i] && IMAGES[i] !== "") img.src = IMAGES[i];
+});
+
+(function () {
+  const audio   = document.getElementById('music');
+  const rampage = document.getElementById('rampage');
+  const party   = document.getElementById('party');
+  const greet   = document.getElementById('greet');
+  const intro   = document.getElementById('intro');
+  const videos  = Array.from(document.querySelectorAll('.dancer'));
+
+  const DROP_TIME = 7, RAMPAGE_TIME = DROP_TIME - 2;
+  const DRIFT_LIMIT = 0.3, DRIFT_CHECK = 3000;
+
+  let rampageShown = false, dropped = false, rafId = null, syncTimer = null;
+  let virtualStart = null, useVirtual = false;
+
+  function now() { return useVirtual ? (performance.now() - virtualStart) / 1000 : audio.currentTime; }
+  function enableVirtualClock(reason) { if (useVirtual) return; useVirtual = true; virtualStart = performance.now(); }
+  function unlockVideos() { videos.forEach(v => { v.muted = true; const p = v.play(); if (p && p.then) p.then(() => v.pause()).catch(() => {}); }); }
+  function warmupVideos() { videos.forEach(v => { try { v.load(); } catch(e){} }); }
+  
+  function dropVideos() {
+    videos.forEach(v => { try { v.currentTime = 0; } catch(e){} });
+    Promise.all(videos.map(v => v.play().catch(() => {}))).catch(() => {});
+    videos.forEach(v => { v.style.animation = 'none'; void v.offsetHeight; v.style.animation = ''; });
+  }
+  
+  function startSyncCheck() {
+    syncTimer = setInterval(() => {
+      if (!videos.length) return;
+      const t0 = videos[0].currentTime;
+      if (videos.some(v => Math.abs(v.currentTime - t0) > DRIFT_LIMIT)) {
+        videos.forEach(v => { try { v.currentTime = t0; } catch(e){} });
+      }
+    }, DRIFT_CHECK);
+  }
+
+  function start() {
+    intro.style.display = 'none';
+    greet.classList.add('show');
+    unlockVideos(); warmupVideos();
+    const p = audio.play();
+    if (p && p.then) p.catch(err => enableVirtualClock('audio: ' + err.name));
+    audio.addEventListener('error', () => enableVirtualClock('audio.error'));
+    rafId = requestAnimationFrame(watchDrop);
+  }
+
+  function watchDrop() {
+    const t = now();
+    if (!rampageShown && t >= RAMPAGE_TIME && t < DROP_TIME) { rampage.classList.add('show'); rampageShown = true; }
+    if (!dropped && t >= DROP_TIME) {
+      greet.classList.remove('show');
+      rampage.classList.add('show', 'after');
+      party.classList.add('drop');
+      dropVideos(); startSyncCheck(); dropped = true;
+      if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
+      return;
+    }
+    rafId = requestAnimationFrame(watchDrop);
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && !dropped && rafId === null) rafId = requestAnimationFrame(watchDrop);
+  });
+
+  window.start = start;
+})();
+</script>
+
+</body>
+</html>
